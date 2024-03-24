@@ -3,6 +3,7 @@
 #include <WiFiUdp.h>
 #include <ESP32Servo.h>
 #include <ESP32PWM.h>
+#include "ArduinoJson.h"
 
 Servo myservo;  // 创建舵机对象
 Servo myservo2;  // 创建舵机对象
@@ -15,10 +16,6 @@ const IPAddress remoteIp(10, 0, 0, 66);
 const unsigned int remotePort = 25066;
 
 bool m_isOpen=false;
-float ThrottleButtonInitValue=0;
-float HorizenDirectionButtonLInitValue=0;
-float VerticalDirectionButtonInitValue=0;
-float HorizenDirectionButtonRInitValue=0;
 
 float maxValue=4095;
 
@@ -105,53 +102,6 @@ void parseControlData(uint8_t* data) {
   myservo.write(_myservoValue);
   pwm1.writeScaled(_pwm1Value);
 }
-void parseInitData(uint8_t* data) {
-  // 在这里添加解析初始化数据的代码
-  int16_t value = (data[3] << 8) | data[4];
-  switch (data[2]) {
-    case 0xA0:
-      Serial.println("Received ThrottleButton data");
-      ThrottleButtonInitValue = value;
-      break;
-    case 0xA1:
-      Serial.println("Received HorizenDirectionButtonL data");
-      HorizenDirectionButtonLInitValue = value;
-      break;
-    case 0xA2:
-      Serial.println("Received VerticalDirectionButton data");
-      VerticalDirectionButtonInitValue = value;
-      break;
-    case 0xA3:
-      Serial.println("Received HorizenDirectionButtonR data");
-      HorizenDirectionButtonRInitValue = value;
-      break;
-    default:
-      Serial.println("Unknown control data type");
-      break;
-  }
-
-}
-
-void parseOpenData(uint8_t* data) {
-  // 在这里添加解析开放数据的代码
-  int16_t value = (data[3] << 8) | data[4];
-  switch (data[2]) {
-    case 0xA0:
-      Serial.println("Received open data");
-      if(value==1)
-      {
-        m_isOpen=true;
-      }
-      else{
-        m_isOpen=false;
-      }
-      break;
-    default:
-      Serial.println("Unknown control data type");
-      break;
-  }
-
-}
 
 void setup() {
   ESP32PWM::allocateTimer(0);
@@ -214,39 +164,10 @@ void loop() {
     if (len > 0) {
       incomingPacket[len] = 0;
     }
-   //for(int i = 0; i < len; i++) {
-   //   Serial.print(incomingPacket[i], HEX);  // 以十六进制形式打印每个字节
-   //   Serial.print(" ");  // 在每个字节之间添加一个空格
-   // }
-   // Serial.println();  // 在打印完所有字节后换行
-    //pwm1.write(1);
-
-    if(!m_isOpen)
-    {
-      pwm1.writeScaled(0);
-      myservo2.write(90);
-      myservo.write(90);
-    }
-    // 解析数据
-    if (incomingPacket[0] == 0xAA) {
-      switch (incomingPacket[1]) {
-        case 0xB0:
-          Serial.println("Received control data");
-          parseControlData(incomingPacket);
-          break;
-        case 0xB1:
-          Serial.println("Received init data");
-          parseInitData(incomingPacket);
-          break;
-        case 0xB2:
-          Serial.println("Received open data");
-          parseOpenData(incomingPacket);
-          break;
-        default:
-          Serial.println("Unknown data type");
-          break;
-      }
-    }
+    
+  myservo2.write(_myservo2Value);
+  myservo.write(_myservoValue);
+  pwm1.writeScaled(_pwm1Value);
   }
   delay(40);
 }
