@@ -10,6 +10,18 @@
         "functional": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "typeinfo": "cpp",
+        "atomic": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "random": "cpp",
+        "fstream": "cpp",
+        "limits": "cpp",
+        "streambuf": "cpp",
+        "cmath": "cpp",
+        "algorithm": "cpp",
+        "new": "cpp"
     }
 }
