@@ -28,7 +28,7 @@ void HardwareControl::init()
     ESP32PWM::allocateTimer(2);
     ESP32PWM::allocateTimer(3);
 
-    m_pwm.attachPin(4, 100, 12);
+    m_pwm.attachPin(4, 100, 10);
     m_servo1.attach(16);
     m_servo2.attach(15);
     m_servo3.attach(2);
@@ -59,5 +59,9 @@ void HardwareControl::servoCtrl_3(int angle)
 
 void HardwareControl::pwmCtrl(float value)
 {
-    m_pwm.writeScaled(value);
+    uint32_t _value = map(value, 0, 100, 102, 230);
+
+    //Serial.println(value);
+    //Serial.println(_value);
+    m_pwm.write(_value);
 }

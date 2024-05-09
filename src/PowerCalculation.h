@@ -1,5 +1,6 @@
 #pragma once
 #include "Arduino.h"
+#include "AverageFilter.h"
 
 class PowerCalculation
 {
@@ -9,8 +10,11 @@ private:
     const int m_detMax = 3171;
 
     const float m_batteryMaxVol = 4.2;
+    const float m_batteryMinVol = 3.3;
 
-    int16_t m_volatileLast=0;
+    float m_volatileLast=0;
+
+    AverageFilter m_AverageFilter;
   
 public:
     PowerCalculation(int pin);
