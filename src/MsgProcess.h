@@ -17,11 +17,13 @@ private:
     double m_initChannel2 = 90;
     double m_initChannel3 = 90;
     double m_initChannel4 = 90;
+    double m_initChannel5 = 90;
 
     double m_curChannel1 = 0;
     double m_curChannel2 = 0;
     double m_curChannel3 = 0;
     double m_curChannel4 = 0;
+    double m_curChannel5 = 0;
 
     clock_t m_internal;
 
@@ -127,24 +129,27 @@ void MsgProcess::HardWareCtrl()
     {
 
         m_hardCtrl.pwmCtrl(m_curChannel1);
-        m_hardCtrl.servoCtrl_1(m_curChannel2);
-        m_hardCtrl.servoCtrl_2(m_curChannel3);
-        m_hardCtrl.servoCtrl_3(m_curChannel4);
+        m_hardCtrl.pwm2Ctrl(m_curChannel2);
+        m_hardCtrl.servoCtrl_1(m_curChannel3);
+        m_hardCtrl.servoCtrl_2(m_curChannel4);
+        m_hardCtrl.servoCtrl_3(m_curChannel5);
     }
     else if (m_isClose)
     {
         m_hardCtrl.pwmCtrl(m_initChannel1);
-        m_hardCtrl.servoCtrl_1(m_initChannel2);
-        m_hardCtrl.servoCtrl_2(m_initChannel3);
-        m_hardCtrl.servoCtrl_3(m_initChannel4);
+        m_hardCtrl.pwm2Ctrl(m_initChannel2);
+        m_hardCtrl.servoCtrl_1(m_initChannel3);
+        m_hardCtrl.servoCtrl_2(m_initChannel4);
+        m_hardCtrl.servoCtrl_3(m_initChannel5);
         m_isClose = false;
     }
     else if (m_isInit)
     {
         m_hardCtrl.pwmCtrl(m_initChannel1);
-        m_hardCtrl.servoCtrl_1(m_initChannel2);
-        m_hardCtrl.servoCtrl_2(m_initChannel3);
-        m_hardCtrl.servoCtrl_3(m_initChannel4);
+        m_hardCtrl.pwm2Ctrl(m_initChannel2);
+        m_hardCtrl.servoCtrl_1(m_initChannel3);
+        m_hardCtrl.servoCtrl_2(m_initChannel4);
+        m_hardCtrl.servoCtrl_3(m_initChannel5);
         m_isInit = false;
     }
 }
@@ -154,9 +159,10 @@ void MsgProcess::run()
     if (clock() - m_internal > 5000)
     {
         m_hardCtrl.pwmCtrl(m_initChannel1);
-        m_hardCtrl.servoCtrl_1(m_initChannel2);
-        m_hardCtrl.servoCtrl_2(m_initChannel3);
-        m_hardCtrl.servoCtrl_3(m_initChannel4);
+        m_hardCtrl.pwm2Ctrl(m_initChannel2);
+        m_hardCtrl.servoCtrl_1(m_initChannel3);
+        m_hardCtrl.servoCtrl_2(m_initChannel4);
+        m_hardCtrl.servoCtrl_3(m_initChannel5);
         return;
     }
     JsonDocument doc;
