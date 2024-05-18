@@ -2,7 +2,7 @@
 #include "MsgProcess.h"
 #include "EspNewMan.h"
 #include "PowerCalculation.h"
-
+//12 13 14 15 4 2 
 const char* ssid = "ESP32_Udp_wzs";
 const char* password = "ssdwifi66";
 

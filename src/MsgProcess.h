@@ -14,7 +14,7 @@ private:
     bool m_isInit = false;
     bool m_isClose = false;
     double m_initChannel1 = 0;
-    double m_initChannel2 = 90;
+    double m_initChannel2 = 0;
     double m_initChannel3 = 90;
     double m_initChannel4 = 90;
     double m_initChannel5 = 90;
