@@ -24,5 +24,6 @@
         "algorithm": "cpp",
         "new": "cpp",
         "memory_resource": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "C:/Users/Fearl/Documents/PlatformIO/Projects/FlightCtrlClient/lib/ArduinoJson"
 }

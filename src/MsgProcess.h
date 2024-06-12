@@ -79,7 +79,7 @@ void MsgProcess::OnDataRecv(const uint8_t *data, int data_len)
         m_curChannel2 = _obj["channel2"].as<double>();
         m_curChannel3 = _obj["channel3"].as<double>();
         m_curChannel4 = _obj["channel4"].as<double>();
-
+        m_internal = clock();
         _replyDoc["HardCtrl"] = 1;
     }
     else if (doc.containsKey("InitValue"))
@@ -91,6 +91,9 @@ void MsgProcess::OnDataRecv(const uint8_t *data, int data_len)
         m_initChannel3 = _obj["channel3"].as<double>();
         m_initChannel4 = _obj["channel4"].as<double>();
         _replyDoc["InitValue"] = 1;
+        String json;
+        serializeJson(_replyDoc, json);
+        EspNewMan_H.send(getMacAddr(), (uint8_t *)json.c_str(), json.length());
     }
     else if (doc.containsKey("open"))
     {
@@ -109,12 +112,9 @@ void MsgProcess::OnDataRecv(const uint8_t *data, int data_len)
     }
     else if (doc.containsKey("HeartBeat"))
     {
-        m_internal = clock();
         _replyDoc["HeartBeat"] = 1;
     }
-    String json;
-    serializeJson(_replyDoc, json);
-    EspNewMan_H.send(getMacAddr(), (uint8_t *)json.c_str(), json.length());
+    
     // Serial.println(m_curChannel1);
     // Serial.println(m_curChannel2);
     // Serial.println(m_curChannel3);
