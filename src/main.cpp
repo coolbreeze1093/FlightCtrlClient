@@ -12,7 +12,6 @@ const unsigned int remotePort = 25066;
 PowerCalculation m_powerCal(34);
 SbcInterface*msgP =new MsgProcess(&m_powerCal);
 
-
 void setup() {
   Serial.begin(115200);
   msgP->setChannel(0);
@@ -23,13 +22,11 @@ void setup() {
   {
     EspNewMan_H.creatPeer(msgP);
   }
- 
 }
 
 void loop() {
   msgP->run();
-
-  delay(1000);
+  delay(2);
 }
 
 

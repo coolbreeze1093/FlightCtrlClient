@@ -30,8 +30,8 @@ void HardwareControl::init()
     ESP32PWM::allocateTimer(2);
     ESP32PWM::allocateTimer(3);
 
-    m_pwm.attachPin(12, 100, 10);
-    m_pwm2.attachPin(2, 100, 10);
+    m_pwm.attachPin(12, 180, 10);
+    m_pwm2.attachPin(2, 180, 10);
     m_servo1.attach(14);
     m_servo2.attach(15);
     m_servo3.attach(13);

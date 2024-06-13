@@ -15,9 +15,6 @@ private:
     bool m_isClose = false;
     double m_initChannel1 = 0;
     double m_initChannel2 = 0;
-    double m_initChannel3 = 90;
-    double m_initChannel4 = 90;
-    double m_initChannel5 = 90;
 
     double m_curChannel1 = 0;
     double m_curChannel2 = 0;
@@ -38,7 +35,7 @@ public:
     void HardWareCtrl();
 };
 
-MsgProcess::MsgProcess(PowerCalculation *pc):m_powerCal(pc)
+MsgProcess::MsgProcess(PowerCalculation *pc) : m_powerCal(pc)
 {
     m_internal = clock();
     m_hardCtrl.init();
@@ -58,10 +55,7 @@ void MsgProcess::OnDataSent(esp_now_send_status_t status)
 
 void MsgProcess::OnDataRecv(const uint8_t *data, int data_len)
 {
-    // String _str(data, data_len);
-    // Serial.print(F("Recive Value: "));
-    // Serial.println(_str);
-    JsonDocument doc, _replyDoc;
+    JsonDocument doc;
     DeserializationError error = deserializeJson(doc, data);
     // Test if parsing succeeds
     if (error)
@@ -70,105 +64,43 @@ void MsgProcess::OnDataRecv(const uint8_t *data, int data_len)
         Serial.println(error.f_str());
         return;
     }
-
     if (doc.containsKey("HardCtrl"))
     {
-
         JsonObject _obj = doc["HardCtrl"].as<JsonObject>();
         m_curChannel1 = _obj["channel1"].as<double>();
         m_curChannel2 = _obj["channel2"].as<double>();
         m_curChannel3 = _obj["channel3"].as<double>();
         m_curChannel4 = _obj["channel4"].as<double>();
-        m_internal = clock();
-        _replyDoc["HardCtrl"] = 1;
     }
-    else if (doc.containsKey("InitValue"))
+    else if (doc.containsKey("volatile"))
     {
-        m_isInit = true;
-        JsonObject _obj = doc["InitValue"].as<JsonObject>();
-        m_initChannel1 = _obj["channel1"].as<double>();
-        m_initChannel2 = _obj["channel2"].as<double>();
-        m_initChannel3 = _obj["channel3"].as<double>();
-        m_initChannel4 = _obj["channel4"].as<double>();
-        _replyDoc["InitValue"] = 1;
+        JsonDocument doc;
+        doc["volatile"] = m_powerCal->getRemainPower();
         String json;
-        serializeJson(_replyDoc, json);
+        serializeJson(doc, json);
         EspNewMan_H.send(getMacAddr(), (uint8_t *)json.c_str(), json.length());
+        m_internal=clock();
     }
-    else if (doc.containsKey("open"))
-    {
-        m_isOpen = true;
-        _replyDoc["open"] = 1;
-    }
-    else if (doc.containsKey("close"))
-    {
-        m_isOpen = false;
-        m_isClose = true;
-        _replyDoc["close"] = 1;
-    }
-    else if (doc.containsKey("ping"))
-    {
-        _replyDoc["pong"] = 1;
-    }
-    else if (doc.containsKey("HeartBeat"))
-    {
-        _replyDoc["HeartBeat"] = 1;
-    }
-    
-    // Serial.println(m_curChannel1);
-    // Serial.println(m_curChannel2);
-    // Serial.println(m_curChannel3);
-    // Serial.println(m_curChannel4);
+
     HardWareCtrl();
 }
 
 void MsgProcess::HardWareCtrl()
 {
-
-    if (m_isOpen)
-    {
-
-        m_hardCtrl.pwmCtrl(m_curChannel1);
-        m_hardCtrl.pwm2Ctrl(m_curChannel2);
-        m_hardCtrl.servoCtrl_1(m_curChannel3);
-        m_hardCtrl.servoCtrl_2(m_curChannel4);
-        m_hardCtrl.servoCtrl_3(m_curChannel5);
-    }
-    else if (m_isClose)
-    {
-        m_hardCtrl.pwmCtrl(m_initChannel1);
-        m_hardCtrl.pwm2Ctrl(m_initChannel2);
-        m_hardCtrl.servoCtrl_1(m_initChannel3);
-        m_hardCtrl.servoCtrl_2(m_initChannel4);
-        m_hardCtrl.servoCtrl_3(m_initChannel5);
-        m_isClose = false;
-    }
-    else if (m_isInit)
-    {
-        m_hardCtrl.pwmCtrl(m_initChannel1);
-        m_hardCtrl.pwm2Ctrl(m_initChannel2);
-        m_hardCtrl.servoCtrl_1(m_initChannel3);
-        m_hardCtrl.servoCtrl_2(m_initChannel4);
-        m_hardCtrl.servoCtrl_3(m_initChannel5);
-        m_isInit = false;
-    }
+    m_hardCtrl.pwmCtrl(m_curChannel1);
+    m_hardCtrl.pwm2Ctrl(m_curChannel2);
+    m_hardCtrl.servoCtrl_1(m_curChannel3);
+    m_hardCtrl.servoCtrl_2(m_curChannel4);
+    m_hardCtrl.servoCtrl_3(m_curChannel5);
 }
 
 void MsgProcess::run()
 {
-    if (clock() - m_internal > 5000)
+    if (clock() - m_internal > 50000)
     {
         m_hardCtrl.pwmCtrl(m_initChannel1);
         m_hardCtrl.pwm2Ctrl(m_initChannel2);
-        m_hardCtrl.servoCtrl_1(m_initChannel3);
-        m_hardCtrl.servoCtrl_2(m_initChannel4);
-        m_hardCtrl.servoCtrl_3(m_initChannel5);
-        return;
+        Serial.println("send vol");
+        m_internal = clock();
     }
-    JsonDocument doc;
-    // Serial.println(_volatile);
-    doc["volatile"] = m_powerCal->getRemainPower();
-    String json;
-    serializeJson(doc, json);
-    EspNewMan_H.send(getMacAddr(), (uint8_t *)json.c_str(), json.length());
 }

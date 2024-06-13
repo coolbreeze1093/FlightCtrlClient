@@ -17,7 +17,7 @@ int PowerCalculation::getRemainPower()
     {
         m_volatileLast=_volatile;
     }
-    int _vol = (m_volatileLast*0.002-m_batteryMinVol+0.24)/(m_batteryMaxVol-m_batteryMinVol)*100;
+    int _vol = (m_volatileLast*0.006-m_batteryMinVol+0.24)/(m_batteryMaxVol-m_batteryMinVol)*100;
     if(_vol<0)
     {
         _vol=0;
